@@ -1,6 +1,5 @@
 package com.parsadp.lens;
 
-
 import android.Manifest;
 import android.content.ContentValues;
 import android.content.Context;
@@ -8,6 +7,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Environment;
@@ -73,8 +73,6 @@ public class CamService extends HiddenCameraService {
         //Open settings to grant permission for "Draw other apps".
         HiddenCameraUtils.openDrawOverPermissionSetting(this);
       }
-
-
     } else {
 
       Toast.makeText(this, "Camera permission not available", Toast.LENGTH_SHORT).show();
@@ -82,18 +80,18 @@ public class CamService extends HiddenCameraService {
     return START_NOT_STICKY;
   }
 
-
   @Override
   public void onImageCapture(@NonNull File imageFile) {
     Toast.makeText(this,
         "Captured image size is : " + imageFile.length(),
         Toast.LENGTH_SHORT)
         .show();
-    Log.e("ImagePathtt",imageFile.getAbsolutePath());
+    Log.e("ImagePathtt", imageFile.getAbsolutePath());
 
     BitmapFactory.Options options = new BitmapFactory.Options();
     options.inPreferredConfig = Bitmap.Config.RGB_565;
-    Bitmap bitmap = BitmapFactory.decodeFile(imageFile.getAbsolutePath(), options);
+    Bitmap bitmap =
+        RotateBitmap(BitmapFactory.decodeFile(imageFile.getAbsolutePath(), options), 90);
     SaveImage(bitmap);
 
     startOfficeLensActivity();
@@ -101,15 +99,21 @@ public class CamService extends HiddenCameraService {
     stopSelf();
   }
 
-  private void startOfficeLensActivity() {
-    try{
-      Intent i = getPackageManager().getLaunchIntentForPackage("com.microsoft.office.officelens");
-      i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-      startActivity(i);
-    } catch (Exception e) {
-      Toast.makeText(this, "Office Lens Application is not installed !", Toast.LENGTH_LONG).show();
-    }
+  private Bitmap RotateBitmap(Bitmap source, float angle) {
+    Matrix matrix = new Matrix();
+    matrix.postRotate(angle);
+    return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
   }
+
+    private void startOfficeLensActivity() {
+        try{
+            Intent i = getPackageManager().getLaunchIntentForPackage("com.microsoft.office.officelens");
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(i);
+        } catch (Exception e) {
+            Toast.makeText(this, "Office Lens Application is not installed !", Toast.LENGTH_LONG).show();
+        }
+    }
 
   private void SaveImage(Bitmap finalBitmap) {
 
@@ -121,23 +125,20 @@ public class CamService extends HiddenCameraService {
 
     int n = 10000;
     n = generator.nextInt(n);
-    String fname = "Image-"+ n +".jpg";
-    File file = new File (myDir, fname);
-    if (file.exists ()) file.delete ();
+    String fname = "Image-" + n + ".jpg";
+    File file = new File(myDir, fname);
+    if (file.exists()) file.delete();
     try {
       FileOutputStream out = new FileOutputStream(file);
       finalBitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
-      // sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED,
-      //     Uri.parse("file://"+ Environment.getExternalStorageDirectory())));
       out.flush();
       out.close();
-
     } catch (Exception e) {
       e.printStackTrace();
     }
     // Tell the media scanner about the new file so that it is
     // immediately available to the user.
-    MediaScannerConnection.scanFile(this, new String[]{file.toString()}, null,
+    MediaScannerConnection.scanFile(this, new String[] { file.toString() }, null,
         new MediaScannerConnection.OnScanCompletedListener() {
           public void onScanCompleted(String path, Uri uri) {
             Log.i("ExternalStorage", "Scanned " + path + ":");

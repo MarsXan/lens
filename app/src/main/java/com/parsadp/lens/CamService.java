@@ -6,6 +6,11 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.MediaScannerConnection;
+import android.net.Uri;
+import android.os.Environment;
 import android.os.IBinder;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -23,6 +28,8 @@ import com.androidhiddencamera.config.CameraImageFormat;
 import com.androidhiddencamera.config.CameraResolution;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.util.Random;
 
 /**
  * Created by Mohsen on 9/1/18.
@@ -60,7 +67,7 @@ public class CamService extends HiddenCameraService {
 
             takePicture();
           }
-        }, 2000L);
+        }, 100L);
       } else {
 
         //Open settings to grant permission for "Draw other apps".
@@ -82,19 +89,48 @@ public class CamService extends HiddenCameraService {
         "Captured image size is : " + imageFile.length(),
         Toast.LENGTH_SHORT)
         .show();
-    Log.e("ImagePath",imageFile.getPath());
+    Log.e("ImagePathtt",imageFile.getAbsolutePath());
+
+    BitmapFactory.Options options = new BitmapFactory.Options();
+    options.inPreferredConfig = Bitmap.Config.RGB_565;
+    Bitmap bitmap = BitmapFactory.decodeFile(imageFile.getAbsolutePath(), options);
+    SaveImage(bitmap);
     stopSelf();
   }
 
-  public static void addImageToGallery(final String filePath, final Context context) {
+  private void SaveImage(Bitmap finalBitmap) {
 
-    ContentValues values = new ContentValues();
+    String root = Environment.getExternalStoragePublicDirectory(
+        Environment.DIRECTORY_PICTURES).toString();
+    File myDir = new File(root + "/saved_images");
+    myDir.mkdirs();
+    Random generator = new Random();
 
-    values.put(MediaStore.Images.Media.DATE_TAKEN, System.currentTimeMillis());
-    values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
-    values.put(MediaStore.MediaColumns.DATA, filePath);
+    int n = 10000;
+    n = generator.nextInt(n);
+    String fname = "Image-"+ n +".jpg";
+    File file = new File (myDir, fname);
+    if (file.exists ()) file.delete ();
+    try {
+      FileOutputStream out = new FileOutputStream(file);
+      finalBitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
+      // sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED,
+      //     Uri.parse("file://"+ Environment.getExternalStorageDirectory())));
+      out.flush();
+      out.close();
 
-    context.getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    // Tell the media scanner about the new file so that it is
+    // immediately available to the user.
+    MediaScannerConnection.scanFile(this, new String[]{file.toString()}, null,
+        new MediaScannerConnection.OnScanCompletedListener() {
+          public void onScanCompleted(String path, Uri uri) {
+            Log.i("ExternalStorage", "Scanned " + path + ":");
+            Log.i("ExternalStorage", "-> uri=" + uri);
+          }
+        });
   }
 
   @Override

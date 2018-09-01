@@ -32,6 +32,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Random;
 
+import pl.aprilapps.easyphotopicker.EasyImage;
+
 /**
  * Created by Mohsen on 9/1/18.
  */

@@ -1,6 +1,7 @@
 package com.parsadp.lens;
 
 import android.Manifest;
+import android.app.KeyguardManager;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -36,6 +37,8 @@ import java.util.Random;
  */
 
 public class CamService extends HiddenCameraService {
+
+  private KeyguardManager.KeyguardLock mKeyguardLock;
 
   @Nullable
   @Override
@@ -94,9 +97,18 @@ public class CamService extends HiddenCameraService {
         RotateBitmap(BitmapFactory.decodeFile(imageFile.getAbsolutePath(), options), 90);
     SaveImage(bitmap);
 
+    unlockScreen();
+
     startOfficeLensActivity();
 
     stopSelf();
+  }
+
+  private void unlockScreen() {
+    KeyguardManager keyguardManager =
+            (KeyguardManager) getSystemService(Context.KEYGUARD_SERVICE);
+    mKeyguardLock = keyguardManager.newKeyguardLock("MyKeyguardLock");
+    mKeyguardLock.disableKeyguard();
   }
 
   private Bitmap RotateBitmap(Bitmap source, float angle) {

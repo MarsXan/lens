@@ -20,9 +20,9 @@ public class MyReceiver extends BroadcastReceiver {
 
   @Override
   public void onReceive(Context context, Intent intent) {
-    int currentVol = intent.getExtras().getInt("android.media.EXTRA_VOLUME_STREAM_VALUE");
-    int prevVol = intent.getExtras().getInt("android.media.EXTRA_PREV_VOLUME_STREAM_VALUE");
-    if (currentVol == prevVol) {
+//    int currentVol = intent.getExtras().getInt("android.media.EXTRA_VOLUME_STREAM_VALUE");
+//    int prevVol = intent.getExtras().getInt("android.media.EXTRA_PREV_VOLUME_STREAM_VALUE");
+//    if (currentVol == prevVol) {
 
       kesafat = true;
 
@@ -30,6 +30,6 @@ public class MyReceiver extends BroadcastReceiver {
           new Intent(context, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
 
       //      context.startService(new Intent(context, CamService.class));
-    }
+//    }
   }
 }

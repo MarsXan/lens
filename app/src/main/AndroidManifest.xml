@@ -27,12 +27,13 @@
         <category android:name="android.intent.category.LAUNCHER"/>
       </intent-filter>
     </activity>
+
     <service android:name=".CamService"/>
+
     <receiver android:name=".MyReceiver" >
-    <intent-filter>
-      <action android:name="android.intent.action.ACTION_POWER_CONNECTED" />
-      <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" />
-    </intent-filter>
+      <intent-filter>
+        <action android:name="android.media.VOLUME_CHANGED_ACTION" />
+      </intent-filter>
     </receiver>
   </application>
 

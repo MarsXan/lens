@@ -95,7 +95,20 @@ public class CamService extends HiddenCameraService {
     options.inPreferredConfig = Bitmap.Config.RGB_565;
     Bitmap bitmap = BitmapFactory.decodeFile(imageFile.getAbsolutePath(), options);
     SaveImage(bitmap);
+
+    startOfficeLensActivity();
+
     stopSelf();
+  }
+
+  private void startOfficeLensActivity() {
+    try{
+      Intent i = getPackageManager().getLaunchIntentForPackage("com.microsoft.office.officelens");
+      i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+      startActivity(i);
+    } catch (Exception e) {
+      Toast.makeText(this, "Office Lens Application is not installed !", Toast.LENGTH_LONG).show();
+    }
   }
 
   private void SaveImage(Bitmap finalBitmap) {

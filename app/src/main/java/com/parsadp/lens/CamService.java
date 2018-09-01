@@ -2,14 +2,10 @@ package com.parsadp.lens;
 
 
 import android.Manifest;
-import android.content.ComponentName;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.media.AudioManager;
 import android.os.IBinder;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -32,7 +28,7 @@ import java.io.File;
  * Created by Mohsen on 9/1/18.
  */
 
-public class DemoCamService extends HiddenCameraService {
+public class CamService extends HiddenCameraService {
 
   @Nullable
   @Override
@@ -59,7 +55,7 @@ public class DemoCamService extends HiddenCameraService {
         new android.os.Handler().postDelayed(new Runnable() {
           @Override
           public void run() {
-            Toast.makeText(DemoCamService.this,
+            Toast.makeText(CamService.this,
                 "Capturing image.", Toast.LENGTH_SHORT).show();
 
             takePicture();
@@ -74,7 +70,6 @@ public class DemoCamService extends HiddenCameraService {
 
     } else {
 
-      //TODO Ask your parent activity for providing runtime permission
       Toast.makeText(this, "Camera permission not available", Toast.LENGTH_SHORT).show();
     }
     return START_NOT_STICKY;
@@ -88,9 +83,6 @@ public class DemoCamService extends HiddenCameraService {
         Toast.LENGTH_SHORT)
         .show();
     Log.e("ImagePath",imageFile.getPath());
-
-    // Do something with the image...
-
     stopSelf();
   }
 
@@ -125,6 +117,7 @@ public class DemoCamService extends HiddenCameraService {
       case CameraError.ERROR_DOES_NOT_HAVE_OVERDRAW_PERMISSION:
         //Display information dialog to the user with steps to grant "Draw over other app"
         //permission for the app.
+        Toast.makeText(this, R.string.error_cannot_get_permission, Toast.LENGTH_LONG).show();
         HiddenCameraUtils.openDrawOverPermissionSetting(this);
         break;
       case CameraError.ERROR_DOES_NOT_HAVE_FRONT_CAMERA:

@@ -25,10 +25,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        if (MyReceiver.kesafat) {
+//        if (MyReceiver.kesafat) {
             unlockScreen()
             EasyImage.openCamera(this, EasyImage.REQ_TAKE_PICTURE)
-        }
+//        }
 
     }
 
@@ -46,7 +46,7 @@ class MainActivity : AppCompatActivity() {
                 SaveImage(BitmapFactory.decodeFile(imageFile.getAbsolutePath(), options))
 
 
-                startOfficeLensActivity()
+               finish()
 
             }
 
@@ -101,5 +101,10 @@ class MainActivity : AppCompatActivity() {
             Log.i("ExternalStorage", "Scanned $path:")
             Log.i("ExternalStorage", "-> uri=$uri")
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        startOfficeLensActivity()
     }
 }

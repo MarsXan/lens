@@ -25,10 +25,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-//        if (MyReceiver.kesafat) {
+        if (MyReceiver.kesafat) {
             unlockScreen()
             EasyImage.openCamera(this, EasyImage.REQ_TAKE_PICTURE)
-//        }
+        }
 
     }
 

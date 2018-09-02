@@ -27,7 +27,7 @@ public class MyReceiver extends BroadcastReceiver {
     int currentVol = intent.getExtras().getInt("android.media.EXTRA_VOLUME_STREAM_VALUE");
     int prevVol = intent.getExtras().getInt("android.media.EXTRA_PREV_VOLUME_STREAM_VALUE");
     if (currentVol < prevVol) {
-
+      counter++;
       Toast.makeText(context, "start main act\n number " + counter, Toast.LENGTH_SHORT).show();
       kesafat = true;
 
